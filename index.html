@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>RAC OpsSpecs Portfolio Converter</title>
+  <meta name="description" content="Convert an Adobe PDF Portfolio of signed OpsSpecs into one normal PDF while preserving visible signatures and attaching the original signed component PDFs for verification." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div class="eyebrow">RELIANT AIR CHARTER</div>
+      <h1>OpsSpecs Portfolio Converter</h1>
+      <p class="lede">Turn an Adobe PDF Portfolio into one normal PDF. Signed pages are flattened exactly as they render, and the original signed PDFs can be embedded in the output for later signature verification.</p>
+    </header>
+
+    <section class="card privacy-card" aria-label="Privacy">
+      <div class="privacy-icon">✓</div>
+      <div>
+        <strong>Runs entirely in your browser</strong>
+        <p>Your OpsSpecs are not uploaded to a server. Conversion happens locally on this computer.</p>
+      </div>
+    </section>
+
+    <section class="card" id="inputCard">
+      <div id="dropZone" class="drop-zone" tabindex="0" role="button" aria-label="Choose a PDF Portfolio">
+        <input id="fileInput" type="file" accept="application/pdf,.pdf" hidden />
+        <div class="drop-icon">PDF</div>
+        <h2>Drop the signed OpsSpecs portfolio here</h2>
+        <p>or click to choose a PDF</p>
+        <button class="secondary" type="button" id="chooseButton">Choose portfolio</button>
+      </div>
+      <div id="fileMeta" class="file-meta hidden" aria-live="polite"></div>
+    </section>
+
+    <section class="card hidden" id="reviewCard">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">STEP 2</div>
+          <h2>Review detected OpsSpecs</h2>
+        </div>
+        <button class="text-button" id="resetButton" type="button">Choose a different file</button>
+      </div>
+
+      <div class="stats" id="stats"></div>
+
+      <div class="settings-grid">
+        <label class="setting">
+          <span>Document order</span>
+          <select id="sortMode">
+            <option value="smart" selected>OpsSpecs smart order</option>
+            <option value="portfolio">Portfolio attachment order</option>
+            <option value="name">Filename A–Z</option>
+          </select>
+          <small>Smart order places TOCs first, then A, B, C, D and E paragraphs numerically.</small>
+        </label>
+
+        <label class="setting">
+          <span>Output quality</span>
+          <select id="qualityMode">
+            <option value="144" selected>Standard — 144 DPI</option>
+            <option value="180">High — 180 DPI</option>
+            <option value="216">Very high — 216 DPI</option>
+          </select>
+          <small>Higher quality increases processing time and output file size.</small>
+        </label>
+      </div>
+
+      <label class="check-row">
+        <input id="attachOriginals" type="checkbox" checked />
+        <span>
+          <strong>Embed the original signed component PDFs</strong>
+          <small>Recommended. The combined pages are flattened for consistent visible signatures; the attached originals retain their original signed bytes for Acrobat verification.</small>
+        </span>
+      </label>
+
+      <details class="file-list-wrap" open>
+        <summary>Detected files <span id="fileCountLabel"></span></summary>
+        <ol id="attachmentList" class="file-list"></ol>
+      </details>
+
+      <div class="callout">
+        <strong>What “preserve signatures” means</strong>
+        <p>The signature appearance is rendered into each page so it stays visible in the single PDF. Combining separately signed PDFs necessarily changes the combined document, so those signatures cannot remain cryptographically valid on the newly merged pages. When “Embed originals” is checked, the exact original signed PDFs are also placed in the output’s Attachments panel and remain independently verifiable.</p>
+      </div>
+
+      <button class="primary wide" id="convertButton" type="button">Create single PDF</button>
+    </section>
+
+    <section class="card hidden" id="progressCard" aria-live="polite">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">PROCESSING</div>
+          <h2 id="progressTitle">Preparing conversion…</h2>
+        </div>
+        <div id="percentLabel" class="percent">0%</div>
+      </div>
+      <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+      <p id="progressDetail" class="progress-detail">Reading portfolio attachments.</p>
+      <div id="log" class="log" aria-label="Conversion log"></div>
+    </section>
+
+    <section class="card success-card hidden" id="successCard">
+      <div class="success-mark">✓</div>
+      <div>
+        <div class="eyebrow">COMPLETE</div>
+        <h2>Your single PDF is ready</h2>
+        <p id="successSummary"></p>
+        <div class="button-row">
+          <a class="primary" id="downloadButton" download="Opspecs_Signed_Single_Document.pdf">Download single PDF</a>
+          <button class="secondary" id="convertAnotherButton" type="button">Convert another</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card error-card hidden" id="errorCard" role="alert">
+      <div class="error-mark">!</div>
+      <div>
+        <h2>Conversion stopped</h2>
+        <p id="errorText"></p>
+        <button class="secondary" id="errorResetButton" type="button">Start over</button>
+      </div>
+    </section>
+
+    <footer>
+      <p>Designed for RAC FAA OpsSpecs portfolios. Best used in current Chrome, Edge or Firefox on a desktop computer.</p>
+    </footer>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
